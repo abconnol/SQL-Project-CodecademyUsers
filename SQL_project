@@ -1,0 +1,84 @@
+--Codecademy Learners Mockup Data
+--SQL project based on Codecademy mock-data on its users
+
+--Get a sense of the tables(users and progress)
+
+SELECT *
+FROM users
+LIMIT 10;
+
+SELECT *
+FROM progress
+LIMIT 10; 
+
+--Determine the schools using Codecademy, based on users' email domains.
+
+SELECT COUNT(*), email_domain
+FROM users
+WHERE email_domain LIKE "%.edu";
+
+--Determine the top 25 schools using Codecademy, based on users' email domains.
+
+SELECT COUNT(*), email_domain
+FROM users
+GROUP BY email_domain
+ORDER BY COUNT(*) DESC
+LIMIT 25; 
+
+--How many users are in NYC?
+
+SELECT COUNT(*)
+FROM users
+WHERE city = "New York";
+
+--50 users are from New York
+
+--How any users are mobile-users?
+SELECT COUNT(*)
+FROM users
+WHERE mobile_app == 'mobile-user'; 
+
+--330 mobile users
+
+--Most common sign-up times
+SELECT COUNT(sign_up_at), strftime('%H', sign_up_at)
+FROM users
+GROUP BY 2
+ORDER BY 1 DESC; 
+
+--Courses completed
+SELECT 
+  COUNT(CASE WHEN learn_cpp = 'completed' THEN 1  END) AS cpp_completed,
+  COUNT(CASE WHEN learn_sql = 'completed' THEN 1 END) AS sql_completed,
+  COUNT(CASE WHEN learn_html = 'completed' THEN 1 END) AS html_completed,
+  COUNT(CASE WHEN learn_javascript = 'completed' THEN 1 END) AS javascript_completed, 
+  COUNT(CASE WHEN learn_java = 'completed' THEN 1 END) AS java_completed
+FROM users
+JOIN progress
+ON users.user_id = progress.user_id; 
+
+-- Do different schools (.edu domains) prefer different courses?
+
+SELECT email_domain, 
+  COUNT(CASE WHEN learn_sql = 'completed' THEN 1 END) AS sql_completed,
+  COUNT(CASE WHEN learn_html = 'completed' THEN 1 END) AS html_completed,
+  COUNT(CASE WHEN learn_javascript = 'completed' THEN 1 END) AS javascript_completed, 
+  COUNT(CASE WHEN learn_java = 'completed' THEN 1 END) AS java_completed
+FROM users
+JOIN progress ON users.user_id = progress.user_id
+GROUP BY email_domain
+ORDER BY sql_completed DESC, html_completed DESC, javascript_completed DESC, java_completed DESC;
+
+--What courses do New Yorkers complete?
+
+SELECT email_domain, 
+  COUNT(CASE WHEN learn_cpp = 'completed' THEN 1 END) AS cpp_completed,
+  COUNT(CASE WHEN learn_sql = 'completed' THEN 1 END) AS sql_completed,
+  COUNT(CASE WHEN learn_html = 'completed' THEN 1 END) AS html_completed,
+  COUNT(CASE WHEN learn_javascript = 'completed' THEN 1 END) AS javascript_completed, 
+  COUNT(CASE WHEN learn_java = 'completed' THEN 1 END) AS java_completed
+FROM users
+JOIN progress ON users.user_id = progress.user_id
+WHERE city = 'New York'
+GROUP BY email_domain
+ORDER BY sql_completed DESC, html_completed DESC, javascript_completed DESC, java_completed DESC;
